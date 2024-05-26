@@ -8,28 +8,40 @@ public class ProcessingStatus
 
     public static ProcessingStatus Deserialize(string value)
     {
-        //check if the value matches one of the valid statuses
-        if(value == "UNKNOWN") return Unknown;
-        if(value == "UNPROCESSED") return Unprocessed;
-        if(value == "PROCESSING") return Processing;
-        if(value == "PROCESSED") return Processed;
-        if(value == "DATAFILE") return DataFile;
-        if(value == "NOTIMAGE") return NotAnImage;
-        if(value == "NOMETADATA") return NoMetadata;
-        if(value == "UNRECOVERABLE") return Unrecoverable;
-        throw new InvalidOperationException("Invalid ProcessingStatus value");
+        switch (value)
+        {
+            //check if the value matches one of the valid statuses
+            case "UNKNOWN":
+                return Unknown;
+            case "UNPROCESSED":
+                return Unprocessed;
+            case "PROCESSING":
+                return Processing;
+            case "PROCESSED":
+                return Processed;
+            case "DATAFILE":
+                return DataFile;
+            case "NOTIMAGE":
+                return NotAnImage;
+            case "NOMETADATA":
+                return NoMetadata;
+            case "UNRECOVERABLE":
+                return Unrecoverable;
+            default:
+                throw new InvalidOperationException("Invalid ProcessingStatus value");
+        }
     }
 
     public string Value { get; private set; }
 
-    public static ProcessingStatus Unknown { get { return new ProcessingStatus("UNKNOWN"); } }
-    public static ProcessingStatus Unprocessed { get { return new ProcessingStatus("UNPROCESSED"); } }
-    public static ProcessingStatus Processing { get { return new ProcessingStatus("PROCESSING"); } }
-    public static ProcessingStatus Processed { get { return new ProcessingStatus("PROCESSED"); } }
-    public static ProcessingStatus DataFile { get { return new ProcessingStatus("DATAFILE"); } }
-    public static ProcessingStatus NotAnImage { get { return new ProcessingStatus("NOTIMAGE"); } }
-    public static ProcessingStatus NoMetadata { get { return new ProcessingStatus("NOMETADATA"); } }
-    public static ProcessingStatus Unrecoverable { get { return new ProcessingStatus("UNRECOVERABLE"); } }
+    public static ProcessingStatus Unknown => new ProcessingStatus("UNKNOWN");
+    public static ProcessingStatus Unprocessed => new ProcessingStatus("UNPROCESSED");
+    public static ProcessingStatus Processing => new ProcessingStatus("PROCESSING");
+    public static ProcessingStatus Processed => new ProcessingStatus("PROCESSED");
+    public static ProcessingStatus DataFile => new ProcessingStatus("DATAFILE");
+    public static ProcessingStatus NotAnImage => new ProcessingStatus("NOTIMAGE");
+    public static ProcessingStatus NoMetadata => new ProcessingStatus("NOMETADATA");
+    public static ProcessingStatus Unrecoverable => new ProcessingStatus("UNRECOVERABLE");
 
     public override string ToString()
     {

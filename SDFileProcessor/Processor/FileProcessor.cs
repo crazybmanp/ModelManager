@@ -5,18 +5,17 @@ using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
 using MetadataExtractor;
-using static System.String;
 using Directory = MetadataExtractor.Directory;
 
 namespace SDFileProcessor.Processor;
 
 class FileProcessor
 {
-    private string path;
+    private readonly string path;
 
     private DateTime? lastCheck = null;
-    private TimeSpan checkFrequency = new TimeSpan(0, 0, 5);
-    private System.Timers.Timer timer;
+    private readonly TimeSpan checkFrequency = new TimeSpan(0, 0, 5);
+    private readonly System.Timers.Timer timer;
 
     private List<FileProgress> files;
     private static readonly ModelHashCache ModelHashCache = new ModelHashCache();
@@ -39,10 +38,7 @@ class FileProcessor
         timer.AutoReset = false;
 
         LoadFileList();
-        if(files == null)
-        {
-            files = new List<FileProgress>();
-        }
+        files ??= new List<FileProgress>();
     }
 
     public void Start()
@@ -77,24 +73,17 @@ class FileProcessor
 
     public FileStats? GetFileStats()
     {
-        if (files != null)
-        {
-            FileStats stats = new FileStats();
-            stats.TotalFiles = files.Count;
-            stats.UnprocessedFiles = files.Where(f => f.GetStatus() == ProcessingStatus.Unprocessed).Count();
-            stats.ProcessingFiles = files.Where(f => f.GetStatus() == ProcessingStatus.Processing).Count();
-            stats.ProcessedFiles = files.Where(f => f.GetStatus() == ProcessingStatus.Processed).Count();
-            stats.IgnoredFiles = files.Where(f => f.GetStatus() == ProcessingStatus.NotAnImage).Count();
-            stats.FailedFiles = files.Where(f => f.GetStatus() == ProcessingStatus.Unrecoverable || f.GetStatus() == ProcessingStatus.NoMetadata).Count();
-            return stats;
-        }
-        else
-        {
-            return null;
-        }
+        FileStats stats = new FileStats();
+        stats.TotalFiles = files.Count;
+        stats.UnprocessedFiles = files.Count(f => f.GetStatus() == ProcessingStatus.Unprocessed);
+        stats.ProcessingFiles = files.Count(f => f.GetStatus() == ProcessingStatus.Processing);
+        stats.ProcessedFiles = files.Count(f => f.GetStatus() == ProcessingStatus.Processed);
+        stats.IgnoredFiles = files.Count(f => f.GetStatus() == ProcessingStatus.NotAnImage);
+        stats.FailedFiles = files.Count(f => f.GetStatus() == ProcessingStatus.Unrecoverable || f.GetStatus() == ProcessingStatus.NoMetadata);
+        return stats;
     }
 
-    public void retry(ProcessingStatus status)
+    public void Retry(ProcessingStatus status)
     {
         foreach (FileProgress item in files.Where(e => e.GetStatus() == status))
         {
@@ -113,7 +102,7 @@ class FileProcessor
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"There has been an error checking the folder:\n{ex.ToString()}", "Error in Check Folder", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"There has been an error checking the folder:\n{ex}", "Error in Check Folder", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         else
@@ -134,7 +123,7 @@ class FileProcessor
 
         MergeCurrentFiles(newFiles);
 
-        checkFiles();
+        CheckFiles();
 
         List<FileProgress> filesToProcess = files.Where(f => f.GetStatus() == ProcessingStatus.Unprocessed).OrderBy(f => f.FileInfo.CreationTime).Take(10).ToList();
         ProcessFiles(filesToProcess);
@@ -167,7 +156,7 @@ class FileProcessor
 
     private void SaveFileList()
     {
-        JsonSerializerOptions optionsCopy = new(options);
+        JsonSerializerOptions optionsCopy = new JsonSerializerOptions(options);
         string serializedList = JsonSerializer.Serialize(files.Select(e => e.GetSerializable()).ToList(), optionsCopy);
         File.WriteAllText(FileListLoc, serializedList);
     }
@@ -191,11 +180,11 @@ class FileProcessor
         }
     }
 
-    private void checkFiles()
+    private void CheckFiles()
     {
         foreach (FileProgress file in files)
         {
-            if (file.isProcessable())
+            if (file.IsProcessable())
             {
                 file.CheckProcessingStatus();
             }
@@ -226,7 +215,7 @@ class FileProcessor
                     throw new RejectException(RejectException.RejectReason.FileDoesNotExist, $"File does not exist: {file.Path}");
                 }
 
-                string TagText;
+                string tagText;
                 try
                 {
                     IEnumerable<Directory> directories = ImageMetadataReader.ReadMetadata(file.Path);
@@ -234,12 +223,7 @@ class FileProcessor
                     Directory pngText = directories.First(d => d.Name == "PNG-tEXt");
                     Tag tag = pngText.Tags.First(t => t.Name == "Textual Data");
 
-                    if (tag.Description == null)
-                    {
-                        throw new Exception("No metadata in tag");
-                    }
-
-                    TagText = tag.Description;
+                    tagText = tag.Description ?? throw new Exception("No metadata in tag");
                 }
                 catch (Exception ex)
                 {
@@ -247,13 +231,13 @@ class FileProcessor
                 }
 
                 // Tag File
-                var pmr = ParseMetadata(TagText);
+                ParsedMetadata pmr = ParseMetadata(tagText);
                 if (pmr.modelName == null)
                 {
-                    bool check = ModelHashCache.getModelNameFromHash(ref pmr);
+                    bool check = ModelHashCache.GetModelNameFromHash(ref pmr);
                     if (!check)
                     {
-                        logNewUnknownModelFile(pmr.modelHash);
+                        LogNewUnknownModelFile(pmr.modelHash);
                         throw new RejectException(RejectException.RejectReason.CouldNotFindModelNameFromHash, $"Could not find model name from hash '{pmr.modelHash}'");
                     }
                 }
@@ -262,7 +246,7 @@ class FileProcessor
                     ModelHashCache.AddModelNameForHash(pmr);
                 }
 
-                var tags = MetadataToTags(pmr);
+                string tags = MetadataToTags(pmr);
 
                 const string tagAppendTxt = @".Tags.txt";
                 string tagFileLoc = file.Path + tagAppendTxt;
@@ -301,6 +285,8 @@ class FileProcessor
                         break;
                     case RejectException.RejectReason.Other:
                         throw;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
                 return;
             }
@@ -324,7 +310,7 @@ class FileProcessor
             }
 
             file.SetStatus(ProcessingStatus.Unrecoverable);
-            MessageBox.Show($"Error Processing file {file.fileName}, This file is unrecoverable: \n{ex.Message}", "Processingt File", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Error Processing file {file.FileName}, This file is unrecoverable: \n{ex.Message}", "Processingt File", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
@@ -368,7 +354,7 @@ class FileProcessor
 
     private static void AddTag(string? tag, ref string output, bool required = true)
     {
-        if (!IsNullOrEmpty(tag))
+        if (!string.IsNullOrEmpty(tag))
         {
             if (output != "")
             {
@@ -505,11 +491,7 @@ class FileProcessor
         Dictionary<string, string> metadata = new Dictionary<string, string>();
         while (!sr.EndOfStream)
         {
-            string tag = readNextTag(sr).Trim();
-            if (tag == null)
-            {
-                continue;
-            }
+            string tag = ReadNextTag(sr).Trim();
 
             string contents = ProcessTag(tag, sr, out bool reject).Trim();
             if (contents != "")
@@ -530,7 +512,7 @@ class FileProcessor
         return metadata;
     }
 
-    private static readonly List<string> lastlineTagIgnoreList = new List<string> {
+    private static readonly List<string> LastlineTagIgnoreList = new List<string> {
             "ComfyUI Workflows",
             "Clip skip",
             "Token merging ratio",
@@ -610,11 +592,11 @@ class FileProcessor
                 elements = ExtractLastLineList(sr);
                 break;
             default:
-                elements = new List<string> { readToNextTag(sr) };
+                elements = [ReadToNextTag(sr)];
                 break;
         }
 
-        if (lastlineTagIgnoreList.Contains(tag))
+        if (LastlineTagIgnoreList.Contains(tag))
         {
             return "";
         }
@@ -622,9 +604,9 @@ class FileProcessor
         switch (tag)
         {
             case "Lora hashes":
-                return Join('\n', elements.Select(e => $"lora:{e}"));
+                return string.Join('\n', elements.Select(e => $"lora:{e}"));
             case "TI hashes":
-                return Join('\n', elements.Select(e => $"ti:{e}"));
+                return string.Join('\n', elements.Select(e => $"ti:{e}"));
             case "Model":
             case "Model hash":
             case "CFG scale":
@@ -648,22 +630,22 @@ class FileProcessor
                 }
                 return elements[0];
             default:
-                logNewLastLineParam(tag);
+                LogNewLastLineParam(tag);
                 reject = true;
                 return "";
         }
 
     }
 
-    private static readonly string newLastLineParamsFile = "NewLastLineParams.txt";
+    private static readonly string NewLastLineParamsFile = "NewLastLineParams.txt";
     private static List<string>? newLastLineParams = null;
-    private static void logNewLastLineParam(string tag)
+    private static void LogNewLastLineParam(string tag)
     {
         if (newLastLineParams == null)
         {
-            if (File.Exists(newLastLineParamsFile))
+            if (File.Exists(NewLastLineParamsFile))
             {
-                newLastLineParams = File.ReadAllLines(newLastLineParamsFile).ToList();
+                newLastLineParams = File.ReadAllLines(NewLastLineParamsFile).ToList();
             }
             else
             {
@@ -674,19 +656,19 @@ class FileProcessor
         if (!newLastLineParams.Contains(tag))
         {
             newLastLineParams.Add(tag);
-            File.WriteAllLines(newLastLineParamsFile, newLastLineParams);
+            File.WriteAllLines(NewLastLineParamsFile, newLastLineParams);
         }
     }
 
-    private static readonly string unknownModelFile = "UnknownModelFile.txt";
+    private static readonly string UnknownModelFile = "UnknownModelFile.txt";
     private static List<string>? unknownModels = null;
-    private static void logNewUnknownModelFile(string tag)
+    private static void LogNewUnknownModelFile(string tag)
     {
         if (unknownModels == null)
         {
-            if (File.Exists(unknownModelFile))
+            if (File.Exists(UnknownModelFile))
             {
-                unknownModels = File.ReadAllLines(unknownModelFile).ToList();
+                unknownModels = File.ReadAllLines(UnknownModelFile).ToList();
             }
             else
             {
@@ -697,7 +679,7 @@ class FileProcessor
         if (!unknownModels.Contains(tag))
         {
             unknownModels.Add(tag);
-            File.WriteAllLines(unknownModelFile, unknownModels);
+            File.WriteAllLines(UnknownModelFile, unknownModels);
         }
     }
 
@@ -709,7 +691,7 @@ class FileProcessor
             throw new Exception("HashList not formatted correctly");
         }
 
-        string lora = readToCharacter('"', sr);
+        string lora = ReadToCharacter('"', sr);
         string[] loras = lora.Split(',');
         List<string> lorasList = new List<string>();
         foreach (string l in loras)
@@ -732,19 +714,19 @@ class FileProcessor
         return lorasList;
     }
 
-    private static string readToNextTag(StreamReader sr)
+    private static string ReadToNextTag(StreamReader sr)
     {
-        const char Tag = ',';
-        return readToCharacter(Tag, sr, true);
+        const char tag = ',';
+        return ReadToCharacter(tag, sr, true);
     }
 
-    private static string readNextTag(StreamReader sr)
+    private static string ReadNextTag(StreamReader sr)
     {
         const char tag = ':';
-        return readToCharacter(tag, sr);
+        return ReadToCharacter(tag, sr);
     }
 
-    private static string readToCharacter(char c, StreamReader sr, bool orEOL = false)
+    private static string ReadToCharacter(char c, StreamReader sr, bool orEol = false)
     {
         string r = "";
         while (!sr.EndOfStream)
@@ -756,7 +738,7 @@ class FileProcessor
             }
             r += next;
         }
-        if (orEOL)
+        if (orEol)
         {
             return r;
         }
@@ -768,15 +750,15 @@ class FileProcessor
         tags = Regex.Replace(tags, @"<[^>]*>", ",");
 
         List<string> splitTags = Regex.Split(tags, @"[\n,]").ToList();
-        splitTags = splitTags.Where(s => !IsNullOrWhiteSpace(s))
+        splitTags = splitTags.Where(s => !String.IsNullOrWhiteSpace(s))
             .Select(s => s.Trim()).ToList();
 
-        splitTags = splitTags.SelectMany(potentialTag => splitByChar('(', potentialTag)).ToList();
-        splitTags = splitTags.SelectMany(potentialTag => splitByChar(')', potentialTag)).ToList();
-        splitTags = splitTags.SelectMany(potentialTag => splitByChar('[', potentialTag)).ToList();
-        splitTags = splitTags.SelectMany(potentialTag => splitByChar(']', potentialTag)).ToList();
-        splitTags = splitTags.SelectMany(potentialTag => splitByChar('{', potentialTag)).ToList();
-        splitTags = splitTags.SelectMany(potentialTag => splitByChar('}', potentialTag)).ToList();
+        splitTags = splitTags.SelectMany(potentialTag => SplitByChar('(', potentialTag)).ToList();
+        splitTags = splitTags.SelectMany(potentialTag => SplitByChar(')', potentialTag)).ToList();
+        splitTags = splitTags.SelectMany(potentialTag => SplitByChar('[', potentialTag)).ToList();
+        splitTags = splitTags.SelectMany(potentialTag => SplitByChar(']', potentialTag)).ToList();
+        splitTags = splitTags.SelectMany(potentialTag => SplitByChar('{', potentialTag)).ToList();
+        splitTags = splitTags.SelectMany(potentialTag => SplitByChar('}', potentialTag)).ToList();
 
         List<string> parsedTags = new List<string>();
         foreach (string potentialTag in splitTags)
@@ -794,11 +776,11 @@ class FileProcessor
             }
         }
 
-        parsedTags = parsedTags.Distinct().Select(s => $"{prefaceString(preface)}{s.ToLower()}").ToList();
+        parsedTags = parsedTags.Distinct().Select(s => $"{PrefaceString(preface)}{s.ToLower()}").ToList();
         return parsedTags;
     }
 
-    private static string prefaceString(string? preface)
+    private static string PrefaceString(string? preface)
     {
         if (preface == null)
         {
@@ -807,7 +789,7 @@ class FileProcessor
         return $"{preface}:";
     }
 
-    private static List<string> splitByChar(char split, string potentialTag)
+    private static List<string> SplitByChar(char split, string potentialTag)
     {
         List<string> processedTags = new List<string>();
 
@@ -860,7 +842,7 @@ public class RejectException : Exception
         Other
     }
 
-    private RejectReason reason;
+    private readonly RejectReason reason;
 
     public RejectReason Reason => reason;
 
@@ -881,7 +863,7 @@ public class RejectException : Exception
         this.reason = reason;
     }
 
-    public string getRejectFolder()
+    public string GetRejectFolder()
     {
         switch (reason)
         {

@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Serialization;
-
-namespace SDFileProcessor.Processor;
+﻿namespace SDFileProcessor.Processor;
 
 internal class FileProgressSerial
 {
-    public required string path { get; set; }
-    public required string status { get; set; }
-    public DateTime? LastStatusChange { get; set; }
+    public required string Path { get; init; }
+    public required string Status { get; init; }
+    public DateTime? LastStatusChange { get; init; }
 }

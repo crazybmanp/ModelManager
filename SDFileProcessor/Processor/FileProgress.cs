@@ -2,31 +2,25 @@
 
 namespace SDFileProcessor.Processor;
 
-internal class FileProgress
+internal class FileProgress(FileInfo fileInfo)
 {
-    public FileInfo FileInfo { get; set; }
+    public FileInfo FileInfo { get; set; } = fileInfo;
     private ProcessingStatus status = ProcessingStatus.Unknown;
-    private DateTime? LastStatusChange = null;
+    private DateTime? lastStatusChange = null;
 
     public static readonly string[] ValidExtensions = [".png", ".jpg", ".jpeg"];
     public static readonly string[] DataExtensions = [".txt", ".json"];
 
-    public FileProgress(FileInfo fileInfo)
+    public FileProgress(FileProgressSerial serial) : this(new FileInfo(serial.Path))
     {
-        FileInfo = fileInfo;
+        status = ProcessingStatus.Deserialize(serial.Status);
+        lastStatusChange = serial.LastStatusChange;
     }
 
-    public FileProgress(FileProgressSerial serial)
+    public void SetStatus(ProcessingStatus newStatus)
     {
-        FileInfo = new FileInfo(serial.path);
-        status = ProcessingStatus.Deserialize(serial.status);
-        LastStatusChange = serial.LastStatusChange;
-    }
-
-    public void SetStatus(ProcessingStatus status)
-    {
-        this.status = status;
-        LastStatusChange = DateTime.Now;
+        status = newStatus;
+        lastStatusChange = DateTime.Now;
     }
     public ProcessingStatus GetStatus()
     {
@@ -35,22 +29,22 @@ internal class FileProgress
 
     public DateTime? GetLastStatusChange()
     {
-        return LastStatusChange;
+        return lastStatusChange;
     }
 
     public FileProgressSerial GetSerializable()
     {
         var test = new FileProgressSerial
         {
-            path = Path,
-            status = status.Value,
-            LastStatusChange = LastStatusChange
+            Path = Path,
+            Status = status.Value,
+            LastStatusChange = lastStatusChange
         };
         return test;
     }
 
     public string Path => FileInfo.FullName;
-    public string fileName => FileInfo.Name;
+    public string FileName => FileInfo.Name;
 
     private void CheckUnknownFile()
     {
@@ -90,7 +84,7 @@ internal class FileProgress
         }
     }
 
-    public bool isProcessable()
+    public bool IsProcessable()
     {
         if (status == ProcessingStatus.Unknown)
         {

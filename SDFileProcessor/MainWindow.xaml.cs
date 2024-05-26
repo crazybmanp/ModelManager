@@ -8,8 +8,8 @@ namespace SDFileProcessor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private System.Timers.Timer timer;
-        FileProcessor processor;
+        private readonly System.Timers.Timer timer;
+        private readonly FileProcessor processor;
 
         public MainWindow()
         {
@@ -21,14 +21,14 @@ namespace SDFileProcessor
             processor = new FileProcessor(@"K:\SD webui\outputs\txt2img-images");
             InitializeComponent();
 
-            setStartStopButtonText();
+            SetStartStopButtonText();
             timer.Start();
         }
 
         private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            setLastCheckTime();
-            setFileStats();
+            SetLastCheckTime();
+            SetFileStats();
         }
 
         private void StartStopButton_Click(object sender, RoutedEventArgs e)
@@ -40,59 +40,59 @@ namespace SDFileProcessor
             {
                 processor.Start();
             }
-            setStartStopButtonText();
+            SetStartStopButtonText();
         }
 
-        private void setLastCheckTime()
+        private void SetLastCheckTime()
         {
             DateTime? lastCheck = processor.GetLastCheck();
             if (lastCheck != null)
             {
-                this.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     LastUpdateTimeLabel.Content = lastCheck.ToString();
                 });
             }
             else
             {
-                this.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     LastUpdateTimeLabel.Content = "Never";
                 });
             }
         }
 
-        private void setFileStats()
+        private void SetFileStats()
         {
             FileStats? fileStats = processor.GetFileStats();
             if (fileStats != null)
             {
-                this.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     FileStatusLabel.Content = fileStats.ToString();
                 });
             }
             else
             {
-                this.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     FileStatusLabel.Content = "None";
                 });
             }
         }
 
-        private void setStartStopButtonText()
+        private void SetStartStopButtonText()
         {
             if (processor.IsRunning())
             {
-                this.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     StartStopButton.Content = "Stop";
                 });
             }
             else
             {
-                this.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     StartStopButton.Content = "Start";
                 });
@@ -101,7 +101,7 @@ namespace SDFileProcessor
 
         private void RetryButton_Click(object sender, RoutedEventArgs e)
         {
-            processor.retry(ProcessingStatus.Unrecoverable);
+            processor.Retry(ProcessingStatus.Unrecoverable);
         }
     }
 }

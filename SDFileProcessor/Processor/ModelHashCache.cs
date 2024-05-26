@@ -13,7 +13,7 @@ public class ModelHashCache
         LoadCacheFromDisk();
     }
 
-    public bool getModelNameFromHash(ref ParsedMetadata pmr)
+    public bool GetModelNameFromHash(ref ParsedMetadata pmr)
     {
         if (cache.TryGetValue(pmr.modelHash, out string? modelName))
         {
