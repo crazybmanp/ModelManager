@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.Design.Serialization;
-using System.Text.Json.Serialization;
-
-namespace SDFileProcessor.Processor;
+﻿namespace SDFileProcessor.Processor;
 public class ProcessingStatus
 {
     private ProcessingStatus(string value) { Value = value; }

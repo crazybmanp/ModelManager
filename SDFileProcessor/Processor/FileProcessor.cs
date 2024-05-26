@@ -14,7 +14,7 @@ class FileProcessor
     private readonly string path;
 
     private DateTime? lastCheck = null;
-    private readonly TimeSpan checkFrequency = new TimeSpan(0, 0, 5);
+    private readonly TimeSpan checkFrequency = new TimeSpan(0, 0, 1);
     private readonly System.Timers.Timer timer;
 
     private List<FileProgress> files;
@@ -61,14 +61,7 @@ class FileProcessor
 
     public DateTime? GetLastCheck()
     {
-        if (IsRunning())
-        {
-            return lastCheck;
-        }
-        else
-        {
-            return null;
-        }
+	    return lastCheck;
     }
 
     public FileStats? GetFileStats()
@@ -111,15 +104,19 @@ class FileProcessor
         }
     }
 
-    private void CheckFolder()
+    private readonly string[] validExtensions = [".jpg", ".jpeg", ".png", ".bmp"];
+	private void CheckFolder()
     {
         if (!System.IO.Directory.Exists(path))
         {
             throw new FileNotFoundException($"Cannot Find the watch path at {path}");
         }
 
-        DirectoryInfo watchdir = new DirectoryInfo(path);
-        FileInfo[] newFiles = watchdir.GetFiles();
+
+		DirectoryInfo watchdir = new DirectoryInfo(path);
+		FileInfo[] newFiles = watchdir.GetFiles()
+			.Where(e => validExtensions.Contains(e.Extension))
+			.ToArray();
 
         MergeCurrentFiles(newFiles);
 

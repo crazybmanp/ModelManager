@@ -15,7 +15,7 @@ namespace SDFileProcessor
         {
             timer = new System.Timers.Timer();
             timer.Elapsed += Timer_Elapsed;
-            timer.Interval = new TimeSpan(0, 0, 1).TotalMilliseconds;
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 100).TotalMilliseconds;
             timer.AutoReset = true;
 
             processor = new FileProcessor(@"K:\SD webui\outputs\txt2img-images");
@@ -103,5 +103,10 @@ namespace SDFileProcessor
         {
             processor.Retry(ProcessingStatus.Unrecoverable);
         }
-    }
+
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+            timer.Stop();
+		}
+	}
 }
