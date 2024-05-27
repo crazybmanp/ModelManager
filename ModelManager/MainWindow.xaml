@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:ModelManager"
+        xmlns:Fluent="urn:fluent-ribbon"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         x:Name="This">
@@ -14,51 +15,71 @@
 			<ColumnDefinition Width="1*"/>
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="60"/>
-			<RowDefinition Height="1*"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition/>
 			<RowDefinition Height="30"/>
 		</Grid.RowDefinitions>
 
-		<Grid Grid.Column="1">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="1*"/>
-				<RowDefinition Height="1*"/>
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="1*"/>
-				<ColumnDefinition Width="Auto"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
+		<Fluent:Ribbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+			<Fluent:Ribbon.Menu>
+				<Fluent:Backstage>
+					<Label>Backstage label</Label>
+				</Fluent:Backstage>
+			</Fluent:Ribbon.Menu>
 
-			<WrapPanel Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right">
-				<Label>Is Complete:</Label>
-				<CheckBox IsChecked="{Binding ElementName=This, Path=FilterCompleted}" IsThreeState="True" VerticalAlignment="Center" Margin="5"/>
-			</WrapPanel>
+			<Fluent:RibbonTabItem>
+				<Fluent:RibbonGroupBox Header="Filtering">
+					<Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="1*"/>
+							<RowDefinition Height="1*"/>
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="1*"/>
+							<ColumnDefinition Width="1*"/>
+						</Grid.ColumnDefinitions>
 
-			<WrapPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right">
-				<Label>Has Preview:</Label>
-				<CheckBox IsChecked="{Binding ElementName=This, Path=FilterPreview}" IsThreeState="True" VerticalAlignment="Center" Margin="5"/>
-			</WrapPanel>
+						<WrapPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right">
+							<Label>Is Complete:</Label>
+							<CheckBox IsChecked="{Binding ElementName=This, Path=FilterCompleted}" IsThreeState="True" VerticalAlignment="Center" Margin="5"/>
+						</WrapPanel>
 
-			<WrapPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right">
-				<Label>Has Link:</Label>
-				<CheckBox IsChecked="{Binding ElementName=This, Path=FilterLink}" IsThreeState="True" VerticalAlignment="Center" Margin="5"/>
-			</WrapPanel>
+						<WrapPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right">
+							<Label>Has Preview:</Label>
+							<CheckBox IsChecked="{Binding ElementName=This, Path=FilterPreview}" IsThreeState="True" VerticalAlignment="Center" Margin="5"/>
+						</WrapPanel>
 
-			<WrapPanel Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right">
-				<Label>Json:</Label>
-				<Button VerticalAlignment="Center" Margin ="1" Click="JsonBtn_Click">
-					<fa:FontAwesome Icon="Gear" Margin="5"/>
-				</Button>
-			</WrapPanel>
-		</Grid>
+						<WrapPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right">
+							<Label>Has Link:</Label>
+							<CheckBox IsChecked="{Binding ElementName=This, Path=FilterLink}" IsThreeState="True" VerticalAlignment="Center" Margin="5"/>
+						</WrapPanel>
+
+						<WrapPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
+							<Label>Json:</Label>
+							<Button VerticalAlignment="Center" Margin ="1" Click="JsonBtn_Click">
+								<fa:FontAwesome Icon="Gear" Margin="5"/>
+							</Button>
+						</WrapPanel>
+					</Grid>
+				</Fluent:RibbonGroupBox>
+				<Fluent:RibbonGroupBox Header="Data Tools">
+					<WrapPanel HorizontalAlignment="Right">
+						<Label>Find all Orphan Files:</Label>
+						<Button VerticalAlignment="Center" Margin ="1" Click="FindOrphansButton_Click">
+							<fa:FontAwesome Icon="Search" Margin="5"/>
+						</Button>
+					</WrapPanel>
+				</Fluent:RibbonGroupBox>
+			</Fluent:RibbonTabItem>
+		</Fluent:Ribbon>
 
 		<ListView x:Name="ModelList" 
 		          Grid.Row="1"
 		          Grid.Column="0" 
 		          Grid.ColumnSpan="2"
 		          HorizontalContentAlignment="Stretch"
-		          ItemsSource="{Binding ElementName=This, Path=DisplayModels}">
+		          ItemsSource="{Binding ElementName=This, Path=DisplayModels}"
+		          d:ItemsSource="{d:SampleData}">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<local:ModelVisual/>

@@ -166,5 +166,11 @@ namespace ModelManager
 		{
 			MessageBox.Show("This is not implemented yet");
 		}
+
+		private void FindOrphansButton_Click(object sender, RoutedEventArgs e)
+		{
+			OrphanFiles win = new OrphanFiles(models);
+			win.Show();
+		}
 	}
 }

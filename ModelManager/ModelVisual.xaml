@@ -7,7 +7,6 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="125" d:DesignWidth="600"
-             d:DataContext="{d:DesignInstance local:Model}"
              x:Name="MVControl">
 	<Grid>
 		<Grid.ColumnDefinitions>
