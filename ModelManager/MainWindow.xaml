@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:ModelManager"
-        xmlns:Fluent="urn:fluent-ribbon"
+        xmlns:fluent="urn:fluent-ribbon"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="800" Width="1200"
@@ -22,15 +22,15 @@
 			<RowDefinition Height="30"/>
 		</Grid.RowDefinitions>
 
-		<Fluent:Ribbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
-			<Fluent:Ribbon.Menu>
-				<Fluent:Backstage>
+		<fluent:Ribbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+			<fluent:Ribbon.Menu>
+				<fluent:Backstage>
 					<Label>Backstage label</Label>
-				</Fluent:Backstage>
-			</Fluent:Ribbon.Menu>
+				</fluent:Backstage>
+			</fluent:Ribbon.Menu>
 
-			<Fluent:RibbonTabItem>
-				<Fluent:RibbonGroupBox Header="Filtering">
+			<fluent:RibbonTabItem>
+				<fluent:RibbonGroupBox Header="Filtering">
 					<Grid>
 						<Grid.RowDefinitions>
 							<RowDefinition Height="1*"/>
@@ -79,17 +79,17 @@
 							</Button>
 						</WrapPanel>
 					</Grid>
-				</Fluent:RibbonGroupBox>
-				<Fluent:RibbonGroupBox Header="Data Tools">
+				</fluent:RibbonGroupBox>
+				<fluent:RibbonGroupBox Header="Data Tools">
 					<WrapPanel HorizontalAlignment="Right">
 						<Label>Find all Orphan Files:</Label>
 						<Button VerticalAlignment="Center" Margin ="1" Click="FindOrphansButton_Click">
 							<fa:FontAwesome Icon="Search" Margin="5"/>
 						</Button>
 					</WrapPanel>
-				</Fluent:RibbonGroupBox>
-			</Fluent:RibbonTabItem>
-		</Fluent:Ribbon>
+				</fluent:RibbonGroupBox>
+			</fluent:RibbonTabItem>
+		</fluent:Ribbon>
 
 		<ListView x:Name="ModelList"
 		         Grid.Row="1"
@@ -108,8 +108,8 @@
 		</ListView>
 
 		<StatusBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-			<StatusBarItem HorizontalAlignment="Right">
-				<Label>Test</Label>
+			<StatusBarItem>
+				<Label Content="{Binding ElementName=This, Path=DisplayModels.Count}" d:Content="1000"/>
 			</StatusBarItem>
 		</StatusBar>
 	</Grid>

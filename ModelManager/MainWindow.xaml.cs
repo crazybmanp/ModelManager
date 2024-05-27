@@ -7,13 +7,15 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Globalization;
 using System.Windows.Data;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace ModelManager
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
 		private List<Model> models;
 		private List<Model> displayModels;
@@ -24,7 +26,7 @@ namespace ModelManager
 		private bool? filterJsonCompleted = null;
 		private bool? filterCompleted = null;
 		private List<string>? categories = null;
-		private string? selectedCategory = null;
+		private string selectedCategory = "No Category";
 
 		public bool? FilterCompleted
 		{
@@ -82,7 +84,7 @@ namespace ModelManager
 			}
 		}
 
-		public string? SelectedCategory
+		public string SelectedCategory
 		{
 			get => selectedCategory;
 			set
@@ -98,7 +100,7 @@ namespace ModelManager
 			private set
 			{
 				displayModels = value;
-				ModelList.ItemsSource = displayModels;
+				OnPropertyChanged();
 			}
 		}
 
@@ -109,8 +111,6 @@ namespace ModelManager
 			categories = GetCategories();
 
 			InitializeComponent();
-
-			ModelList.ItemsSource = displayModels;
 		}
 
 		private List<Model> LoadAllLoras()
@@ -141,7 +141,12 @@ namespace ModelManager
 
 		private List<string> GetCategories()
 		{
-			return models.Select(e => e.Category).Distinct().ToList();
+			List<string> categories =
+			[
+				"No Category"
+			];
+			categories.AddRange(models.Select(e => e.Category).Distinct());
+			return categories;
 		}
 
 		private void FilterList()
@@ -168,14 +173,14 @@ namespace ModelManager
 				filtered = filtered.Where(e => e.isLinkComplete == FilterLink).ToList();
 			}
 
+			if (selectedCategory != "No Category")
+			{
+				filtered = filtered.Where(e => e.Category == selectedCategory).ToList();
+			}
+
 			if (FilterName is not null)
 			{
 				filtered = filtered.Where(e => e.Name.Contains(FilterName)).ToList();
-			}
-
-			if (selectedCategory is not null)
-			{
-				filtered = filtered.Where(e => e.Category == selectedCategory).ToList();
 			}
 
 			DisplayModels = filtered;
@@ -190,6 +195,21 @@ namespace ModelManager
 		{
 			OrphanFiles win = new OrphanFiles(models);
 			win.Show();
+		}
+
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+		{
+			if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+			field = value;
+			OnPropertyChanged(propertyName);
+			return true;
 		}
 	}
 }

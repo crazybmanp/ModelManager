@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
@@ -125,11 +126,19 @@ namespace ModelManager
 			orphanList.Clear();
 			orphans.ForEach(e => orphanList.Add(e));
 		}
+
+		private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+		{
+			Process.Start("explorer.exe", "/select, " + e.Uri.AbsoluteUri);
+			e.Handled = true;
+		}
 	}
 
 	public class Orphan
 	{
-		public required string Path { get; set; }
+		public required string Path { get; init; }
 		public bool Selected { get; set; } = false;
+
+		public string DisplayPath => System.IO.Path.GetRelativePath(Model.SDPath, Path);
 	}
 }
