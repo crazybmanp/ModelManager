@@ -38,7 +38,7 @@ namespace ModelManager
 
 		private List<string> GetAllFiles()
 		{
-			string path = Path.Join(Model.SDPath, Model.LoraPath, @"Characters\");
+			string path = Path.Join(Model.SDPath, Model.LoraPath);
 			return Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
 		}
 

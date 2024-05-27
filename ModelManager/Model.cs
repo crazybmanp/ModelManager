@@ -5,7 +5,6 @@ namespace ModelManager;
 
 public class Model
 {
-
 	public static string SDPath = @"K:\SD webui\models\";
 	public static string LoraPath = @"Lora\";
 
@@ -17,16 +16,60 @@ public class Model
 	public ModelJson? JsonFile;
 	public FileInfo? PreviewFile;
 	public FileInfo? LinkFile;
-	
+
 	public String Category { get; set; }
-	
+
 	public bool IsJsonComplete => JsonFile != null && JsonFile.IsComplete();
-	public bool IsJsonPPComplete => JsonFile is { ActivationText: not null };
-	public bool IsJsonDWComplete => JsonFile is { PreferredWeight: not null };
 	public bool isPreviewComplete => PreviewFile is not null;
 	public bool isLinkComplete => LinkFile is not null;
 
-	public string ImageSource => PreviewFile?.FullName ?? Path.Join(Directory.GetCurrentDirectory(), @"Resources\card-no-preview.png");
+	public string ImageSource => PreviewFile?.FullName ??
+	                             NoPreview;
+
+	public string DisplayModelPositivePrompt => JsonFile?.ActivationText ?? "Not Specified";
+	public string DisplayModelDefaultWeight => JsonFile?.PreferredWeight.ToString() ?? "None";
+
+	public static string NoPreview => Path.Join(Directory.GetCurrentDirectory(), @"Resources\card-no-preview.png");
+
+	public string? GetUrl
+	{
+		get
+		{
+			if (LinkFile != null)
+			{
+				string[] lines = File.ReadAllLines(LinkFile.FullName);
+
+				foreach (string line in lines)
+				{
+					if (line.StartsWith("URL=", StringComparison.OrdinalIgnoreCase))
+					{
+						return line.Substring(4);
+					}
+				}
+			}
+
+			return null;
+		}
+	}
+
+	public string GetLinkTitle
+	{
+		get
+		{
+			//if the link exists, get the domain for the link
+			string? link = GetUrl;
+
+			if (link != null)
+			{
+				Uri uri = new Uri(link);
+				return uri.Host;
+			}
+			else
+			{
+				return "No Link";
+			}
+		}
+	}
 
 	public Model(FileInfo ModelFile, ModelType Type)
 	{

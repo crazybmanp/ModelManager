@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Windows;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Globalization;
+using System.Windows.Data;
 
 namespace ModelManager
 {
@@ -21,6 +23,8 @@ namespace ModelManager
 		private bool? filterPreview = null;
 		private bool? filterJsonCompleted = null;
 		private bool? filterCompleted = null;
+		private List<string>? categories = null;
+		private string? selectedCategory = null;
 
 		public bool? FilterCompleted
 		{
@@ -68,6 +72,26 @@ namespace ModelManager
 			}
 		}
 
+		public List<string>? Categories
+		{
+			get => categories;
+			set
+			{
+				categories = value;
+				FilterList();
+			}
+		}
+
+		public string? SelectedCategory
+		{
+			get => selectedCategory;
+			set
+			{
+				selectedCategory = value;
+				FilterList();
+			}
+		}
+
 		public List<Model> DisplayModels
 		{
 			get => displayModels;
@@ -82,26 +106,16 @@ namespace ModelManager
 		{
 			models = LoadAllLoras();
 			displayModels = models;
+			categories = GetCategories();
 
 			InitializeComponent();
-			ModelList.ItemsSource = models;
 
-			// foreach (Model model in models)
-			// {
-			// 	if (!model.IsComplete)
-			// 	{
-			// 		continue;
-			//
-			// 	}
-			// 	ModelVisual mv = new ModelVisual(model);
-			// 	modelVisuals.Add(mv);
-			// 	FileViewerStack.Children.Add(new ModelVisual(model));
-			// }
+			ModelList.ItemsSource = displayModels;
 		}
 
 		private List<Model> LoadAllLoras()
 		{
-			DirectoryInfo loraDir = new DirectoryInfo(Path.Join(Model.SDPath, Model.LoraPath, @"Characters\"));
+			DirectoryInfo loraDir = new DirectoryInfo(Path.Join(Model.SDPath, Model.LoraPath));
 			FileInfo[] files = loraDir.GetFiles("*", SearchOption.AllDirectories);
 			List<FileInfo> modelFiles = files.Where(e => Model.ValidModelFiletypes.Contains(Path.GetExtension(e.Name))).ToList();
 
@@ -125,9 +139,9 @@ namespace ModelManager
 			}
 		};
 
-		private string[] getCategories()
+		private List<string> GetCategories()
 		{
-			return models.Select(e => e.Category).ToArray();
+			return models.Select(e => e.Category).Distinct().ToList();
 		}
 
 		private void FilterList()
@@ -157,6 +171,11 @@ namespace ModelManager
 			if (FilterName is not null)
 			{
 				filtered = filtered.Where(e => e.Name.Contains(FilterName)).ToList();
+			}
+
+			if (selectedCategory is not null)
+			{
+				filtered = filtered.Where(e => e.Category == selectedCategory).ToList();
 			}
 
 			DisplayModels = filtered;

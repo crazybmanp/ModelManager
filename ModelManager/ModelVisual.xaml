@@ -6,30 +6,29 @@
              xmlns:local="clr-namespace:ModelManager"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
-             d:DesignHeight="125" d:DesignWidth="600"
+             d:DesignHeight="175" d:DesignWidth="600"
+			 MinHeight="175"
              x:Name="MVControl">
 	<Grid>
 		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="1*" MaxWidth="150"/>
+			<ColumnDefinition Width="4*"/>
 			<ColumnDefinition Width="Auto"/>
-			<ColumnDefinition Width="1*"/>
-			<ColumnDefinition Width="1*"/>
-			<ColumnDefinition Width="1*"/>
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="1*"/>
-			<RowDefinition Height="1*"/>
 			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="1*"/>
 		</Grid.RowDefinitions>
 
 		<Image Stretch="Uniform" StretchDirection="DownOnly" 
 		       Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" 
-		       Source="{Binding ImageSource}" 
-		       Height="{Binding ElementName=MVControl, Path=ActualHeight}"/>
+		       Source="{Binding ImageSource}" d:Source="Resources/card-no-preview.png"/>
 
-		<Label Content="{Binding Name}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontSize="25" Margin="5"/>
-		<Label Content="{Binding Category}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" FontSize="20" Foreground="Gray" Margin="5"/>
+		<Label Content="{Binding Name}" Grid.Column="1" Grid.Row="0" FontSize="25" Margin="5"/>
+		<Label Content="{Binding Category}" Grid.Column="1" Grid.Row="1" FontSize="20" Foreground="Gray" Margin="5"/>
 		
-		<WrapPanel Grid.Column="3" Grid.Row="0" HorizontalAlignment="Right" Margin ="5">
+		<WrapPanel Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" Margin ="5">
 			<Label Content="Complete"/>
 			<CheckBox VerticalAlignment="Center" 
 			          Margin="5,0,0,0" 
@@ -37,7 +36,7 @@
 			          IsHitTestVisible="False" Focusable="False" />
 		</WrapPanel>
 
-		<StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+		<StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
 			<Button VerticalAlignment="Center" Margin ="1" Height="30" Width="30">
 				<fa:FontAwesome Icon="Arrows" FontSize="20"/>
 			</Button>
@@ -49,14 +48,32 @@
 			</Button>
 		</StackPanel>
 
-		<CheckBox Content="Preview" Grid.Row="2" Grid.Column="1"
-		          IsChecked="{Binding isPreviewComplete, Mode=OneWay}" 
-		          IsHitTestVisible="False" Focusable="False" />
-		<StackPanel Grid.Row="2" Grid.Column="2">
-			<CheckBox Content="MetaDataPresent" IsChecked="{Binding IsJsonComplete, Mode=OneWay}" IsHitTestVisible="False" Focusable="False"/>
-			<CheckBox Content="Positive Prompt" IsChecked="{Binding IsJsonPPComplete, Mode=OneWay}" IsHitTestVisible="False" Focusable="False"/>
-			<CheckBox Content="Default Weight" IsChecked="{Binding IsJsonDWComplete, Mode=OneWay}" IsHitTestVisible="False" Focusable="False"/>
-		</StackPanel>
-		<CheckBox Content="Link" Grid.Row="2" Grid.Column="3" IsChecked="{Binding isLinkComplete, Mode=OneWay}" IsHitTestVisible="False" Focusable="False"/>
+		<Grid Grid.Row="2" Grid.Column="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="1*"/>
+			</Grid.ColumnDefinitions>
+			<CheckBox Grid.Column="1" Grid.Row="0" Content="Metadata Complete" IsChecked="{Binding IsJsonComplete, Mode=OneWay}" IsHitTestVisible="False" Focusable="False"/>
+			<Label Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">Default Weight:</Label>
+			<Label Grid.Column="1" Grid.Row="1" Content="{Binding DisplayModelDefaultWeight, Mode=OneWay}" d:Content="1.0"/>
+			<Label Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right">Prompt:</Label>
+			<TextBox Grid.Column="1" Grid.Row="2"
+				Text="{Binding DisplayModelPositivePrompt, Mode=OneWay}" 
+				d:Text="This is a test string A long one. It keeps going forever and ever and ever and ever and ever and ever and ever and ever and ever and ever and ever and ever and ever"
+				TextWrapping="Wrap"
+				IsReadOnly="True"
+			/>
+		</Grid>
+
+		<Label Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right">
+			<Hyperlink NavigateUri="{Binding GetUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+				<Run Text="{Binding GetLinkTitle, Mode=OneWay}" d:Text="TestPlace.net"/>
+			</Hyperlink>
+		</Label>
 	</Grid>
 </UserControl>

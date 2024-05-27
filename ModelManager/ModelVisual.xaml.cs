@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
 
 namespace ModelManager
 {
@@ -7,19 +8,21 @@ namespace ModelManager
 	/// </summary>
 	public partial class ModelVisual : UserControl
 	{
-		//private Model Model { get; init; }
 		public ModelVisual()
 		{
-			//Model= model;
 
 			InitializeComponent();
 		}
 
-		public ModelVisual(Model model)
+		private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
 		{
-			//Model= model;
-			
-			InitializeComponent();
+			Process.Start(new ProcessStartInfo
+			{
+				Verb = "open",
+				UseShellExecute = true,
+				FileName = e.Uri.AbsoluteUri
+			});
+			e.Handled = true;
 		}
 	}
 }
