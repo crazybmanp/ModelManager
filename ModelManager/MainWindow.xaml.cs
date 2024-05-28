@@ -105,6 +105,8 @@ namespace ModelManager
 			}
 		}
 
+		public List<Model> GetModels => models;
+
 		public MainWindow()
 		{
 			models = LoadAllLoras();
@@ -114,7 +116,7 @@ namespace ModelManager
 			InitializeComponent();
 		}
 
-		private List<Model> LoadAllLoras()
+		public static List<Model> LoadAllLoras()
 		{
 			DirectoryInfo loraDir = new DirectoryInfo(Path.Join(Model.SDPath, Model.LoraPath));
 			FileInfo[] files = loraDir.GetFiles("*", SearchOption.AllDirectories);
@@ -194,7 +196,7 @@ namespace ModelManager
 
 		private void FindOrphansButton_Click(object sender, RoutedEventArgs e)
 		{
-			OrphanFiles win = new OrphanFiles(models);
+			OrphanFiles win = new OrphanFiles(this);
 			win.Show();
 		}
 
@@ -220,6 +222,11 @@ namespace ModelManager
 		}
 
 		private void RefreshButton_Click(object sender, RoutedEventArgs e)
+		{
+			Refresh();
+		}
+
+		public void Refresh()
 		{
 			models = LoadAllLoras();
 			FilterList();

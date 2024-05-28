@@ -45,8 +45,9 @@ public class Model
 		}
 	}
 
-	public string DisplayModelPositivePrompt => JsonFile?.ActivationText ?? "Not Specified";
+	public string DisplayModelPositivePrompt => String.IsNullOrEmpty(JsonFile?.ActivationText ?? "") ? "[Not Specified]" : JsonFile!.ActivationText!;
 	public string DisplayModelDefaultWeight => JsonFile?.PreferredWeight?.ToString() ?? "None";
+	public string DisplayModelDescription => String.IsNullOrEmpty(JsonFile?.Description ?? "") ? "[Not Specified]" : JsonFile!.Description!;
 
 	public static BitmapImage? noPreviewImage;
 	public static BitmapImage NoPreview
@@ -134,13 +135,13 @@ public class Model
 		Category = Path.GetRelativePath(Path.Join(SDPath, LoraPath), path);
 	}
 
-	public static readonly string[] ValidModelFiletypes = [".safetensors", ".pkl", ".pickle"];
+	public static readonly string[] ValidModelFiletypes = [".safetensors", ".pkl", ".pickle", ".pt"];
 	private static ModelFileType GetModelFileType(string extension)
 	{
 		return extension switch
 		{
 			".safetensors" => ModelFileType.Safetensors,
-			".pkl" or ".pickle" => ModelFileType.Pickle,
+			".pkl" or ".pickle" or ".pt" => ModelFileType.Pickle,
 			_ => ModelFileType.Unknown
 		};
 	}

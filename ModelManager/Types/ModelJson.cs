@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace ModelManager
 {
@@ -59,9 +60,36 @@ namespace ModelManager
 		public bool IsComplete() =>
 		(
 			SdVersion is not null &&
-			(ActivationText is not null || (Description is null || !Description.Contains(@"N/A"))) &&
-			PreferredWeight is not null && PreferredWeight is not 0.0
+			ActivationTextIsComplete &&
+			PreferredWeightIsComplete
 		);
+
+		private bool PreferredWeightIsComplete
+		{
+			get
+			{
+				if (PreferredWeight is not null && PreferredWeight is not 0.0) return true;
+				if (!string.IsNullOrEmpty(Description)) return false;
+				return HasWeightRange(Description);
+			}
+		}
+
+		private bool ActivationTextIsComplete
+		{
+			get
+			{
+				if (!string.IsNullOrEmpty(ActivationText)) return true;
+				if (string.IsNullOrEmpty(Description)) return false;
+				return !Description.Contains(@"N/A");
+			}
+		}
+
+		private static bool HasWeightRange(string description)
+		{
+			//A weight range is in the format of either [-2 to 2] or [-2.0 to 2.0]
+			Regex regex = new Regex(@"\[-?\d+(\.\d+)? to -?\d+(\.\d+)?\]");
+			return regex.IsMatch(description);
+		}
 
 		private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
 		{

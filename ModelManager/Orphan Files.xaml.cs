@@ -12,14 +12,15 @@ namespace ModelManager
 	/// </summary>
 	public partial class OrphanFiles : Window
 	{
-		private ObservableCollection<Orphan> orphanList = new ObservableCollection<Orphan>();
-		private List<Model> models;
+		private readonly MainWindow parent;
+		private readonly ObservableCollection<Orphan> orphanList = new ObservableCollection<Orphan>();
+		private List<Model> Models => parent.GetModels;
 
 		public ObservableCollection<Orphan> OrphanList => orphanList;
 
-		public OrphanFiles(List<Model> models)
+		public OrphanFiles(MainWindow parent)
 		{
-			this.models = models;
+			this.parent = parent;
 			FindOrphanFiles();
 
 			InitializeComponent();
@@ -47,7 +48,7 @@ namespace ModelManager
 		{
 			List<string> paths = new List<string>();
 
-			foreach (Model model in models)
+			foreach (Model model in Models)
 			{
 				paths.Add(model.ModelFile.FullName);
 				if (model.PreviewFile != null) paths.Add(model.PreviewFile.FullName);
@@ -71,7 +72,7 @@ namespace ModelManager
 					File.Delete(orphan.Path);
 				}
 
-				FindOrphanFiles();
+				Refresh();
 			}
 			else
 			{
@@ -99,7 +100,7 @@ namespace ModelManager
 					File.Move(orphan.Path, newFilePath);
 				}
 
-				FindOrphanFiles();
+				Refresh();
 			}
 			else
 			{
@@ -107,9 +108,15 @@ namespace ModelManager
 			}
 		}
 
+		private void Refresh()
+		{
+			parent.Refresh();
+			FindOrphanFiles();
+		}
+
 		private void RefreshButton_Click(object sender, RoutedEventArgs e)
 		{
-			FindOrphanFiles();
+			Refresh();
 		}
 
 		private void SelectAllCheckBox_Click(object sender, RoutedEventArgs e)
