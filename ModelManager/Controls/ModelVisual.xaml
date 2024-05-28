@@ -23,7 +23,8 @@
 
 		<Image Stretch="Uniform" StretchDirection="DownOnly" 
 		       Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" 
-		       Source="{Binding ImageSource}" d:Source="/Resources/card-no-preview.png"/>
+		       Source="{Binding ImageSource}" d:Source="/Resources/card-no-preview.png"
+		       />
 
 		<Label Content="{Binding Name}" Grid.Column="1" Grid.Row="0" FontSize="25" Margin="5"/>
 		<Label Content="{Binding Category}" Grid.Column="1" Grid.Row="1" FontSize="20" Foreground="Gray" Margin="5"/>

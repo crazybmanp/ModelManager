@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace ModelManager;
 
@@ -23,13 +24,52 @@ public class Model
 	public bool isPreviewComplete => PreviewFile is not null;
 	public bool isLinkComplete => LinkFile is not null;
 
-	public string ImageSource => PreviewFile?.FullName ??
-	                             NoPreview;
+	public BitmapImage ImageSource
+	{
+		get
+		{
+			if (PreviewFile is not null)
+			{
+				using FileStream stream = File.OpenRead(PreviewFile.FullName);
+				BitmapImage image = new BitmapImage();
+				image.BeginInit();
+				image.CacheOption = BitmapCacheOption.OnLoad;
+				image.StreamSource = stream;
+				image.EndInit();
+				return image;
+			}
+			else
+			{
+				return NoPreview;
+			}
+		}
+	}
 
 	public string DisplayModelPositivePrompt => JsonFile?.ActivationText ?? "Not Specified";
 	public string DisplayModelDefaultWeight => JsonFile?.PreferredWeight?.ToString() ?? "None";
 
-	public static string NoPreview => Path.Join(Directory.GetCurrentDirectory(), @"Resources\card-no-preview.png");
+	public static BitmapImage? noPreviewImage;
+	public static BitmapImage NoPreview
+	{
+		get
+		{
+			if (noPreviewImage is not null)
+			{
+				return noPreviewImage;
+			}
+			else
+			{
+				var path = Path.Join(Directory.GetCurrentDirectory(), @"Resources\card-no-preview.png");
+				using FileStream stream = File.OpenRead(path);
+				BitmapImage image = new BitmapImage();
+				image.BeginInit();
+				image.CacheOption = BitmapCacheOption.OnLoad;
+				image.StreamSource = stream;
+				image.EndInit();
+				return image;
+			}
+		}
+	}
 
 	public string? GetUrl
 	{
