@@ -59,8 +59,8 @@ namespace ModelManager
 		public bool IsComplete() =>
 		(
 			SdVersion is not null &&
-			ActivationText is not null &&
-			PreferredWeight is not null
+			(ActivationText is not null || (Description is null || !Description.Contains(@"N/A"))) &&
+			PreferredWeight is not null && PreferredWeight is not 0.0
 		);
 
 		private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions

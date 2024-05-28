@@ -23,13 +23,7 @@
 		</Grid.RowDefinitions>
 
 		<fluent:Ribbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
-			<fluent:Ribbon.Menu>
-				<fluent:Backstage>
-					<Label>Backstage label</Label>
-				</fluent:Backstage>
-			</fluent:Ribbon.Menu>
-
-			<fluent:RibbonTabItem>
+			<fluent:RibbonTabItem Header="General">
 				<fluent:RibbonGroupBox Header="Filtering">
 					<Grid>
 						<Grid.RowDefinitions>
@@ -80,6 +74,14 @@
 						</WrapPanel>
 					</Grid>
 				</fluent:RibbonGroupBox>
+				<fluent:RibbonGroupBox Header="Data">
+					<WrapPanel HorizontalAlignment="Right">
+						<Label>Refresh:</Label>
+						<Button VerticalAlignment="Center" Margin ="1" Click="RefreshButton_Click">
+							<fa:FontAwesome Icon="Refresh" Margin="5"/>
+						</Button>
+					</WrapPanel>
+				</fluent:RibbonGroupBox>
 				<fluent:RibbonGroupBox Header="Data Tools">
 					<WrapPanel HorizontalAlignment="Right">
 						<Label>Find all Orphan Files:</Label>
@@ -89,7 +91,7 @@
 					</WrapPanel>
 					<WrapPanel HorizontalAlignment="Right">
 						<Label>FileProcessor:</Label>
-						<Button VerticalAlignment="Center" Margin ="1" Click="Button_Click">
+						<Button VerticalAlignment="Center" Margin ="1" Click="FileProcessorButton_Click">
 							<fa:FontAwesome Icon="File" Margin="5"/>
 						</Button>
 					</WrapPanel>

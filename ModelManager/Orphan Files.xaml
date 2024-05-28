@@ -40,7 +40,7 @@
 						<CheckBox Grid.Column="0" VerticalAlignment="Center" IsChecked="{Binding Selected}"/>
 						<Label Grid.Column="1" VerticalAlignment="Center">
 							<Hyperlink NavigateUri="{Binding Path}" RequestNavigate="Hyperlink_RequestNavigate">
-								<Run Text="{Binding DisplayPath}"/>
+								<Run Text="{Binding DisplayPath, Mode=OneWay}"/>
 							</Hyperlink>
 						</Label>
 					</Grid>

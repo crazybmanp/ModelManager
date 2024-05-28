@@ -181,7 +181,7 @@ namespace ModelManager
 
 			if (FilterName is not null)
 			{
-				filtered = filtered.Where(e => e.Name.Contains(FilterName)).ToList();
+				filtered = filtered.Where(e => e.Name.ToLower().Contains(FilterName.ToLower())).ToList();
 			}
 
 			DisplayModels = filtered;
@@ -213,10 +213,16 @@ namespace ModelManager
 			return true;
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private void FileProcessorButton_Click(object sender, RoutedEventArgs e)
 		{
 			FileProcessorWindow win = new FileProcessorWindow();
 			win.Show();
+		}
+
+		private void RefreshButton_Click(object sender, RoutedEventArgs e)
+		{
+			models = LoadAllLoras();
+			FilterList();
 		}
 	}
 }
