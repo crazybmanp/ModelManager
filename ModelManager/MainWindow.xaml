@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:ModelManager"
         xmlns:fluent="urn:fluent-ribbon"
         mc:Ignorable="d"
-        Title="MainWindow" 
+        Title="Model Manager" 
         Height="800" Width="1200"
 		MinWidth="600"
         x:Name="This">
@@ -85,6 +85,12 @@
 						<Label>Find all Orphan Files:</Label>
 						<Button VerticalAlignment="Center" Margin ="1" Click="FindOrphansButton_Click">
 							<fa:FontAwesome Icon="Search" Margin="5"/>
+						</Button>
+					</WrapPanel>
+					<WrapPanel HorizontalAlignment="Right">
+						<Label>FileProcessor:</Label>
+						<Button VerticalAlignment="Center" Margin ="1" Click="Button_Click">
+							<fa:FontAwesome Icon="File" Margin="5"/>
 						</Button>
 					</WrapPanel>
 				</fluent:RibbonGroupBox>

@@ -6,12 +6,12 @@ namespace SDFileProcessor
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class FileProcessorWindow : Window
     {
         private readonly System.Timers.Timer timer;
         private readonly FileProcessor processor;
 
-        public MainWindow()
+        public FileProcessorWindow()
         {
             timer = new System.Timers.Timer();
             timer.Elapsed += Timer_Elapsed;

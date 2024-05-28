@@ -21,7 +21,7 @@ namespace ModelManager
 
 			string f = File.ReadAllText(metaFile.FullName);
 
-			SDModelInfo data = JsonSerializer.Deserialize<SDModelInfo>(f, serializerOptions) ?? throw new Exception("ModelJsonFailed to deserialize");
+			SDModelInfo data = JsonSerializer.Deserialize<SDModelInfo>(f, SerializerOptions) ?? throw new Exception("ModelJsonFailed to deserialize");
 
 			Description = data.Description;
 			SdVersion = data.SdVersion;
@@ -63,7 +63,7 @@ namespace ModelManager
 			PreferredWeight is not null
 		);
 
-		private static readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions
+		private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
 		{
 			WriteIndented = true,
 			UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
@@ -77,7 +77,7 @@ namespace ModelManager
 
 	public class ModelFileDto
 	{
-		public string MetaFile { get; init; }
+		public required string MetaFile { get; init; }
 		public string? Description { get; set; }
 		public string? SdVersion { get; set; }
 		public string? ActivationText { get; set; }

@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using SDFileProcessor;
 
 namespace ModelManager
 {
@@ -210,6 +211,12 @@ namespace ModelManager
 			field = value;
 			OnPropertyChanged(propertyName);
 			return true;
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			FileProcessorWindow win = new FileProcessorWindow();
+			win.Show();
 		}
 	}
 }
