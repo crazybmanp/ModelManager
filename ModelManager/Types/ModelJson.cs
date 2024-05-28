@@ -69,7 +69,7 @@ namespace ModelManager
 			get
 			{
 				if (PreferredWeight is not null && PreferredWeight is not 0.0) return true;
-				if (!string.IsNullOrEmpty(Description)) return false;
+				if (string.IsNullOrEmpty(Description)) return false;
 				return HasWeightRange(Description);
 			}
 		}
@@ -80,7 +80,7 @@ namespace ModelManager
 			{
 				if (!string.IsNullOrEmpty(ActivationText)) return true;
 				if (string.IsNullOrEmpty(Description)) return false;
-				return !Description.Contains(@"N/A");
+				return Description.Contains(@"N/A");
 			}
 		}
 

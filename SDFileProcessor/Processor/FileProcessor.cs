@@ -14,7 +14,7 @@ class FileProcessor
     private readonly string path;
 
     private DateTime? lastCheck = null;
-    private readonly TimeSpan checkFrequency = new TimeSpan(0, 0, 1);
+    private readonly TimeSpan checkFrequency = new TimeSpan(0, 0, 0, 0, 250);
     private readonly System.Timers.Timer timer;
 
     private List<FileProgress> files;
@@ -122,7 +122,7 @@ class FileProcessor
 
         CheckFiles();
 
-        List<FileProgress> filesToProcess = files.Where(f => f.GetStatus() == ProcessingStatus.Unprocessed).OrderBy(f => f.FileInfo.CreationTime).Take(10).ToList();
+        List<FileProgress> filesToProcess = files.Where(f => f.GetStatus() == ProcessingStatus.Unprocessed).OrderBy(f => f.FileInfo.CreationTime).Take(1).ToList();
         ProcessFiles(filesToProcess);
 
         SaveFileList();
