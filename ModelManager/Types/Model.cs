@@ -27,7 +27,7 @@ public class Model
 	                             NoPreview;
 
 	public string DisplayModelPositivePrompt => JsonFile?.ActivationText ?? "Not Specified";
-	public string DisplayModelDefaultWeight => JsonFile?.PreferredWeight.ToString() ?? "None";
+	public string DisplayModelDefaultWeight => JsonFile?.PreferredWeight?.ToString() ?? "None";
 
 	public static string NoPreview => Path.Join(Directory.GetCurrentDirectory(), @"Resources\card-no-preview.png");
 

@@ -24,5 +24,11 @@ namespace ModelManager
 			});
 			e.Handled = true;
 		}
-	}
+
+		private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			ModelViewer mv = new ModelViewer((Model)DataContext);
+			mv.Show();
+		}
+    }
 }
