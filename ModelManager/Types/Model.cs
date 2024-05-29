@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Microsoft.VisualBasic.FileIO;
 
 namespace ModelManager;
 
@@ -245,21 +246,21 @@ public class Model
 
 	public void Delete()
 	{
-		ModelFile.Delete();
+		FileSystem.DeleteFile(ModelFile.FullName, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
 
 		if (PreviewFile is not null)
 		{
-			PreviewFile.Delete();
+			FileSystem.DeleteFile(PreviewFile.FullName, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
 		}
 
 		if (LinkFile is not null)
 		{
-			LinkFile.Delete();
+			FileSystem.DeleteFile(LinkFile.FullName, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
 		}
 
 		if (JsonFile is not null)
 		{
-			JsonFile.MetaFile.Delete();
+			FileSystem.DeleteFile(JsonFile.MetaFile.FullName, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
 		}
 
 		RemoveEmptyDirectory(Category);
