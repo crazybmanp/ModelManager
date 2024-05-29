@@ -99,7 +99,7 @@
 			</fluent:RibbonTabItem>
 		</fluent:Ribbon>
 
-		<ListView x:Name="ModelList"
+		<ListView
 		         Grid.Row="1"
 		         Grid.Column="0" 
 		         Grid.ColumnSpan="2"
@@ -110,7 +110,7 @@
 		         d:ItemsSource="{d:SampleData}">
 			<ListView.ItemTemplate>
 				<DataTemplate>
-					<local:ModelVisual/>
+					<local:ModelVisual MainWindow="{Binding ElementName=This}"/>
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ModelManager;
@@ -45,6 +46,8 @@ public class Model
 		}
 	}
 
+	public bool IsComplete => (JsonFile is not null && PreviewFile is not null && LinkFile is not null && JsonFile.IsComplete());
+	public Brush IsCompleteColor => new SolidColorBrush(IsComplete ? Colors.LightGreen : Colors.IndianRed);
 	public string DisplayModelPositivePrompt => String.IsNullOrEmpty(JsonFile?.ActivationText ?? "") ? "[Not Specified]" : JsonFile!.ActivationText!;
 	public string DisplayModelDefaultWeight => JsonFile?.PreferredWeight?.ToString() ?? "None";
 	public string DisplayModelDescription => String.IsNullOrEmpty(JsonFile?.Description ?? "") ? "[Not Specified]" : JsonFile!.Description!;
@@ -174,7 +177,63 @@ public class Model
 		};
 	}
 
-	public bool IsComplete => (JsonFile is not null && PreviewFile is not null && LinkFile is not null && JsonFile.IsComplete());
+	public void RemoveEmptyDirectory(string category)
+	{
+		DirectoryInfo directory = new DirectoryInfo(Path.Join(SDPath, LoraPath, category));
+		if (directory.GetFiles().Length == 0 && directory.GetDirectories().Length == 0)
+		{
+			directory.Delete();
+		}
+	}
+
+	public void Move(string category)
+	{
+		string newDirectory = Path.Join(SDPath, LoraPath, category);
+		Directory.CreateDirectory(newDirectory);
+		string newPath = Path.Join(newDirectory, Name);
+		ModelFile.MoveTo($"{newPath}{ModelFile.Extension}");
+
+		if (PreviewFile is not null)
+		{
+			PreviewFile.MoveTo($"{newPath}{PreviewFile.Extension}");
+		}
+
+		if (LinkFile is not null)
+		{
+			LinkFile.MoveTo($"{newPath}{LinkFile.Extension}");
+		}
+
+		if (JsonFile is not null)
+		{
+			JsonFile.MetaFile.MoveTo($"{newPath}{JsonFile.MetaFile.Extension}");
+		}
+
+		RemoveEmptyDirectory(Category);
+
+		Category = category;
+	}
+
+	public void Delete()
+	{
+		ModelFile.Delete();
+
+		if (PreviewFile is not null)
+		{
+			PreviewFile.Delete();
+		}
+
+		if (LinkFile is not null)
+		{
+			LinkFile.Delete();
+		}
+
+		if (JsonFile is not null)
+		{
+			JsonFile.MetaFile.Delete();
+		}
+
+		RemoveEmptyDirectory(Category);
+	}
 }
 
 public class ModelDto

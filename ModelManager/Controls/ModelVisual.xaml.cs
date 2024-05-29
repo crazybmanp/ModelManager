@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ModelManager
@@ -8,6 +9,15 @@ namespace ModelManager
 	/// </summary>
 	public partial class ModelVisual : UserControl
 	{
+		public static readonly DependencyProperty MainWindowProperty = DependencyProperty.Register(
+			nameof(MainWindow), typeof(MainWindow), typeof(ModelVisual));
+
+		public required MainWindow MainWindow
+		{
+			get => (MainWindow)GetValue(MainWindowProperty);
+			set => SetValue(MainWindowProperty, value);
+		}
+
 		public ModelVisual()
 		{
 
@@ -25,10 +35,20 @@ namespace ModelManager
 			e.Handled = true;
 		}
 
-		private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void GetInfoButton_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			ModelViewer mv = new ModelViewer((Model)DataContext);
 			mv.Show();
 		}
-    }
+
+		private void MoveButton_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			MainWindow.Move((Model)DataContext);
+		}
+
+		private void DeleteButton_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			MainWindow.Delete((Model)DataContext);
+		}
+	}
 }

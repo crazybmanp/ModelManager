@@ -28,8 +28,8 @@
 
 		<Label Content="{Binding Name}" FontWeight="SemiBold" d:Content="Hot new Lora" Grid.Column="1" Grid.Row="0" FontSize="20" Margin="3"/>
 		<Label Content="{Binding Category}"  d:Content="Trash/Hot Garbage" Grid.Column="1" Grid.Row="1" Foreground="Gray" Margin="3"/>
-		
-		<WrapPanel Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" Margin ="3">
+
+		<WrapPanel Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin ="3" Background="{Binding IsCompleteColor, Mode=OneWay}">
 			<Label Content="Complete"/>
 			<CheckBox VerticalAlignment="Center" 
 			          Margin="3" 
@@ -38,13 +38,13 @@
 		</WrapPanel>
 
 		<StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-			<Button VerticalAlignment="Center" Margin ="1" Height="25" Width="25">
+			<Button VerticalAlignment="Center" Margin ="1" Height="25" Width="25" Click="MoveButton_Click">
 				<fa:FontAwesome Icon="Arrows" FontSize="20"/>
 			</Button>
-			<Button VerticalAlignment="Center" Margin ="1" Height="25" Width="25" Click="Button_Click">
+			<Button VerticalAlignment="Center" Margin ="1" Height="25" Width="25" Click="GetInfoButton_Click">
 				<fa:FontAwesome Icon="info" FontSize="20"/>
 			</Button>
-			<Button VerticalAlignment="Center" Margin ="1" Height="25" Width="25">
+			<Button VerticalAlignment="Center" Margin ="1" Height="25" Width="25" Click="DeleteButton_Click">
 				<fa:FontAwesome Icon="Trash" FontSize="20"/>
 			</Button>
 		</StackPanel>

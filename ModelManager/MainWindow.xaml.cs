@@ -1,15 +1,10 @@
-﻿using System.IO;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Windows;
-using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Globalization;
-using System.Windows.Data;
+﻿using SDFileProcessor;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
-using SDFileProcessor;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Windows;
 
 namespace ModelManager
 {
@@ -26,7 +21,7 @@ namespace ModelManager
 		private bool? filterPreview = null;
 		private bool? filterJsonCompleted = null;
 		private bool? filterCompleted = null;
-		private List<string>? categories = null;
+		private List<string> categories;
 		private string selectedCategory = "No Category";
 
 		public bool? FilterCompleted
@@ -36,13 +31,18 @@ namespace ModelManager
 			{
 				filterCompleted = value;
 				FilterList();
+				OnPropertyChanged();
 			}
 		}
 
 		public bool? FilterJsonCompleted
 		{
 			get => filterJsonCompleted;
-			set => filterJsonCompleted = value;
+			set
+			{
+				filterJsonCompleted = value;
+				OnPropertyChanged();
+			}
 		}
 
 		public bool? FilterPreview
@@ -52,6 +52,7 @@ namespace ModelManager
 			{
 				filterPreview = value;
 				FilterList();
+				OnPropertyChanged();
 			}
 		}
 
@@ -62,6 +63,7 @@ namespace ModelManager
 			{
 				filterLink = value;
 				FilterList();
+				OnPropertyChanged();
 			}
 		}
 
@@ -72,16 +74,19 @@ namespace ModelManager
 			{
 				filterName = value;
 				FilterList();
+				OnPropertyChanged();
 			}
 		}
 
-		public List<string>? Categories
+		public List<string> Categories
 		{
 			get => categories;
 			set
 			{
 				categories = value;
+				if (!categories.Contains(SelectedCategory)) SelectedCategory = "No Category";
 				FilterList();
+				OnPropertyChanged();
 			}
 		}
 
@@ -92,6 +97,7 @@ namespace ModelManager
 			{
 				selectedCategory = value;
 				FilterList();
+				OnPropertyChanged();
 			}
 		}
 
@@ -101,6 +107,7 @@ namespace ModelManager
 			private set
 			{
 				displayModels = value;
+				OnPropertyChanged();
 				OnPropertyChanged();
 			}
 		}
@@ -229,7 +236,38 @@ namespace ModelManager
 		public void Refresh()
 		{
 			models = LoadAllLoras();
+			Categories = GetCategories();
 			FilterList();
+		}
+
+		public void Move(Model model)
+		{
+			//Pop up new modal to ask what category to move to;
+			ChooseCategory catDiag = new ChooseCategory(categories, model.Category);
+			catDiag.ShowDialog();
+
+			if (catDiag.DialogResult != true)
+			{
+				return;
+			}
+
+			model.Move(catDiag.ResultString);
+
+			Refresh();
+		}
+
+		public void Delete(Model model)
+		{
+			//As user for confirmation of the destructive operation;
+			MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this model?", "Delete Model", MessageBoxButton.YesNo);
+			if (result == MessageBoxResult.No)
+			{
+				return;
+			}
+
+			model.Delete();
+
+			Refresh();
 		}
 	}
 }
