@@ -243,7 +243,7 @@ namespace ModelManager
 		public void Move(Model model)
 		{
 			//Pop up new modal to ask what category to move to;
-			ChooseCategory catDiag = new ChooseCategory(categories, model.Category);
+			ChooseCategory catDiag = new ChooseCategory(categories, model.Category, model.Name);
 			catDiag.ShowDialog();
 
 			if (catDiag.DialogResult != true)
@@ -251,7 +251,20 @@ namespace ModelManager
 				return;
 			}
 
-			model.Move(catDiag.ResultString);
+			if (catDiag.ModelNameModified)
+			{
+				if (models.Any(e => e.Name == catDiag.ModelName))
+				{
+					MessageBox.Show("That model name is already in use!");
+					return;
+				}
+
+				model.Move(catDiag.ResultString, catDiag.ModelName);
+			}
+			else
+			{
+				model.Move(catDiag.ResultString);
+			}
 
 			Refresh();
 		}

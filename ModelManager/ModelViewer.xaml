@@ -48,6 +48,7 @@
 				d:Text="Model Name"
 				Margin="3"
 				FontSize="25"
+				IsEnabled="false"
 				/>
 
 			<Label
@@ -62,6 +63,7 @@
 				Text="{Binding Category}"
 				d:Text="Category"
 				Margin="3"
+				IsEnabled="false"
 				/>
 
 			<StackPanel 
@@ -79,12 +81,12 @@
 				Grid.Row="2" 
 				Grid.Column="1"
 				Margin="3"
-				Text="{Binding Link}"
+				Text="{Binding Link, UpdateSourceTrigger=PropertyChanged}"
 				d:Text="http://Goat.se"
 				/>
 
 			<StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Horizontal" FlowDirection="RightToLeft">
-				<Button Margin="5" IsEnabled="{Binding IsEdited}" Click="SaveButton_Click"> <!-- TODO: This needs to be bound -->
+				<Button Margin="5" Background="{Binding EditedBrush}" IsEnabled="{Binding IsEdited}"  Click="SaveButton_Click">
 					<fa:FontAwesome Icon="Save" Margin="5"></fa:FontAwesome>
 				</Button>
 			</StackPanel>
@@ -122,7 +124,8 @@
 				Grid.ColumnSpan="2"
 				Margin="3"
 				TextWrapping="Wrap"
-				Text="{Binding Description}"
+				AcceptsReturn="True"
+				Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
 				d:Text="Description"
 				/>
 
@@ -133,8 +136,9 @@
 				Grid.Column="0"
 				Grid.Row="3"
 				TextWrapping="Wrap"
+				AcceptsReturn="True"
 				Margin="3"
-				Text="{Binding ActivationText}"
+				Text="{Binding ActivationText, UpdateSourceTrigger=PropertyChanged}"
 				d:Text="1girl,&lt;lora:Shishiro Botan:0.7&gt; Botan, long hair, white hair, (toned:1.25), (mature female, milf:1.2), (masterpiece, best quality), intricate details"
 				/>
 
@@ -145,8 +149,9 @@
 				Grid.Column="1"
 				Grid.Row="3"
 				TextWrapping="Wrap"
+				AcceptsReturn="True"
 				Margin="3"
-				Text="{Binding NegativeText}"
+				Text="{Binding NegativeText, UpdateSourceTrigger=PropertyChanged}"
 				d:Text="1girl,&lt;lora:Shishiro Botan:0.7&gt; Botan, long hair, white hair, (toned:1.25), (mature female, milf:1.2), (masterpiece, best quality), intricate details"
 			/>
 
@@ -193,7 +198,8 @@
 				Grid.ColumnSpan="2"
 				Margin="3"
 				TextWrapping="Wrap"
-				Text="{Binding Notes}"
+				AcceptsReturn="True"
+				Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
 				d:Text="Notes"
 			/>
 		</Grid>

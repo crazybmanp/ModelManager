@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ModelManager
@@ -11,6 +12,7 @@ namespace ModelManager
 	public partial class ModelViewer : Window, INotifyPropertyChanged
 	{
 		private Model targetModel;
+		private MainWindow mainWindow;
 
 		#region BackingValues
 
@@ -41,6 +43,7 @@ namespace ModelManager
 				if (modifiedLink == "" && targetModel.GetUrl is null) modifiedLink = null;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -52,6 +55,7 @@ namespace ModelManager
 				modifiedName = value == targetModel.Name ? null : value;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -63,6 +67,7 @@ namespace ModelManager
 				modifiedCategory = value == targetModel.Category ? null : value;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -75,6 +80,7 @@ namespace ModelManager
 				if (modifiedDescription == "" && targetModel.JsonFile?.Description is null) modifiedDescription = null;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -87,6 +93,7 @@ namespace ModelManager
 				if (modifiedSdVersion == "Not Set" && targetModel.JsonFile?.SdVersion is null) modifiedSdVersion = null;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -99,6 +106,7 @@ namespace ModelManager
 				if (modifiedActivationText == "" && targetModel.JsonFile?.ActivationText is null) modifiedActivationText = null;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -111,6 +119,7 @@ namespace ModelManager
 				if (modifiedPreferredWeight == 0.0 && targetModel.JsonFile?.PreferredWeight is null) modifiedPreferredWeight = null;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -123,6 +132,7 @@ namespace ModelManager
 				if (modifiedNegativeText == "" && targetModel.JsonFile?.NegativeText is null) modifiedNegativeText = null;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -135,6 +145,7 @@ namespace ModelManager
 				if (modifiedNotes == "" && targetModel.JsonFile?.Notes is null) modifiedNotes = null;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsEdited));
+				OnPropertyChanged(nameof(EditedBrush));
 			}
 		}
 
@@ -149,11 +160,14 @@ namespace ModelManager
 			modifiedNotes != null ||
 			modifiedLink != null;
 
+		public Brush EditedBrush => new SolidColorBrush(IsEdited ? Colors.LightSkyBlue : Colors.DarkGray);
+
 		#endregion
 
-		public ModelViewer(Model model)
+		public ModelViewer(Model model, MainWindow window)
 		{
 			targetModel = model;
+			mainWindow = window;
 
 			InitializeComponent();
 		}
@@ -162,6 +176,8 @@ namespace ModelManager
 
 		private void SaveButton_Click(object sender, RoutedEventArgs e)
 		{
+			if (!IsEdited) return;
+
 			//Validation
 			ReadOnlyObservableCollection<ValidationError> result = Validation.GetErrors(PreferedWeightTxt);
 			if (result.Count > 0)
@@ -171,9 +187,32 @@ namespace ModelManager
 			}
 
 			//commit data to the model
+			if (targetModel.JsonFile == null)
+			{
+				targetModel.JsonFile = new ModelJson(
+					$"{targetModel.GetmodelFileBase}.json", 
+					modifiedDescription ?? "", 
+					modifiedSdVersion ?? "SD1", 
+					modifiedActivationText ??"", 
+					modifiedPreferredWeight ?? 0, 
+					modifiedNegativeText ?? "", 
+					modifiedNotes ?? "");
+				return;
+			}
+
+			if (modifiedDescription != null) targetModel.JsonFile!.Description = modifiedDescription;
+			if (modifiedSdVersion != null) targetModel.JsonFile!.SdVersion = modifiedSdVersion;
+			if (modifiedActivationText != null) targetModel.JsonFile!.ActivationText = modifiedActivationText;
+			if (modifiedPreferredWeight != null) targetModel.JsonFile!.PreferredWeight = modifiedPreferredWeight.Value;
+			if (modifiedNegativeText != null) targetModel.JsonFile!.NegativeText = modifiedNegativeText;
+			if (modifiedNotes != null) targetModel.JsonFile!.Notes = modifiedNotes;
+			if (modifiedLink != null) targetModel.SetUrl(modifiedLink);
 
 			//Save
+			targetModel.JsonFile!.Save();
 
+			mainWindow.Refresh();
+			Close();
 		}
 
 		#endregion

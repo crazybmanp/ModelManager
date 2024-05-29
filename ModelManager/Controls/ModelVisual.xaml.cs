@@ -37,7 +37,7 @@ namespace ModelManager
 
 		private void GetInfoButton_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			ModelViewer mv = new ModelViewer((Model)DataContext);
+			ModelViewer mv = new ModelViewer((Model)DataContext, MainWindow);
 			mv.Show();
 		}
 

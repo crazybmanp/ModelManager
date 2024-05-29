@@ -42,6 +42,35 @@ namespace ModelManager
 			Notes = data.Notes;
 		}
 
+		public ModelJson(string fileName, string? description, string? sdVersion, string? activationText, double? preferredWeight, string? negativeText, string? notes)
+		{
+			MetaFile = new FileInfo(fileName);
+
+			Description = description;
+			SdVersion = sdVersion;
+			ActivationText = activationText;
+			PreferredWeight = preferredWeight;
+			NegativeText = negativeText;
+			Notes = notes;
+
+			Save();
+		}
+		public void Save()
+		{
+			SDModelInfo data = new SDModelInfo()
+			{
+				Description = Description??"",
+				SdVersion = SdVersion??"SD1",
+				ActivationText = ActivationText??"",
+				PreferredWeight = PreferredWeight??0,
+				NegativeText = NegativeText??"",
+				Notes = Notes??""
+			};
+
+			string jsonString = JsonSerializer.Serialize(data, SerializerOptions);
+			File.WriteAllText(MetaFile.FullName, jsonString);
+		}
+
 		public ModelFileDto GetDto()
 		{
 			return new ModelFileDto

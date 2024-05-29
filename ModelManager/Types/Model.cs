@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -24,6 +26,8 @@ public class Model
 	public bool IsJsonComplete => JsonFile != null && JsonFile.IsComplete();
 	public bool isPreviewComplete => PreviewFile is not null;
 	public bool isLinkComplete => LinkFile is not null;
+
+	public string GetmodelFileBase => Path.Join(SDPath, LoraPath, Category, Name);
 
 	public BitmapImage ImageSource
 	{
@@ -186,11 +190,37 @@ public class Model
 		}
 	}
 
-	public void Move(string category)
+	public void Move(string category, string? newName=null)
 	{
 		string newDirectory = Path.Join(SDPath, LoraPath, category);
 		Directory.CreateDirectory(newDirectory);
-		string newPath = Path.Join(newDirectory, Name);
+		string newPath = Path.Join(newDirectory, newName ?? Name);
+
+		if (File.Exists($"{newPath}{ModelFile.Extension}"))
+		{
+			MessageBox.Show("Cannot move the file, a model with the same name already exists there.");
+			return;
+		}
+
+		if (PreviewFile is not null && File.Exists($"{newPath}{PreviewFile.Extension}"))
+		{
+			MessageBox.Show("Cannot move the file, a preview with the same name already exists there.");
+			return;
+		}
+
+		if (LinkFile is not null && File.Exists($"{newPath}{LinkFile.Extension}"))
+		{
+			MessageBox.Show("Cannot move the file, a link file with the same name already exists there.");
+			return;
+		}
+
+		if (JsonFile is not null && File.Exists($"{newPath}{JsonFile.MetaFile.Extension}"))
+		{
+			MessageBox.Show("Cannot move the file, a json file with the same name already exists there.");
+			return;
+		}
+
+
 		ModelFile.MoveTo($"{newPath}{ModelFile.Extension}");
 
 		if (PreviewFile is not null)
@@ -233,6 +263,11 @@ public class Model
 		}
 
 		RemoveEmptyDirectory(Category);
+	}
+
+	internal void SetUrl(string modifiedLink)
+	{
+		throw new NotImplementedException();
 	}
 }
 

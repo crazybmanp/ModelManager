@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ModelManager;
 
@@ -12,15 +13,19 @@ public partial class ChooseCategory : Window, INotifyPropertyChanged
 	private string newCategoryName = string.Empty;
 	private List<string> categories;
 	private string selectedCategory;
+	private string modelName;
+	private string originalModelName;
 
 	private const string AddNewCategory = "Add New Category";
 
-	public ChooseCategory(List<string> categoryList, string currentCategory)
+	public ChooseCategory(List<string> categoryList, string currentCategory, string originalModelName)
 	{
 		categories = categoryList.ToList();
 		categories.Remove("No Category");
 		categories.Insert(0, AddNewCategory);
 		selectedCategory = currentCategory;
+		this.originalModelName = originalModelName;
+		modelName = originalModelName;
 
 		InitializeComponent();
 	}
@@ -72,6 +77,22 @@ public partial class ChooseCategory : Window, INotifyPropertyChanged
 		}
 	}
 
+	public string ModelName
+	{
+		get => modelName;
+		set
+		{
+			modelName = value;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(ModelNameModified));
+			OnPropertyChanged(nameof(ModelNameColor));
+		}
+	}
+
+	public bool ModelNameModified => ModelName != originalModelName;
+
+	public Brush? ModelNameColor => ModelNameModified ? new SolidColorBrush(Colors.MediumSeaGreen) : null;
+
 	private void MoveButton_Click(object sender, RoutedEventArgs e)
 	{
 		if (SelectedCategory == AddNewCategory)
@@ -90,6 +111,7 @@ public partial class ChooseCategory : Window, INotifyPropertyChanged
 	{
 		SelectedCategory = AddNewCategory;
 		NewCategoryName = String.Empty;
+		modelName = originalModelName;
 		DialogResult = false;
 		Close();
 	}
