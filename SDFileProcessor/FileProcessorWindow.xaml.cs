@@ -8,17 +8,20 @@ namespace SDFileProcessor
     /// </summary>
     public partial class FileProcessorWindow : Window
     {
+	    private readonly string outputLocation;
         private readonly System.Timers.Timer timer;
         private readonly FileProcessor processor;
-
-        public FileProcessorWindow()
+        
+        public FileProcessorWindow(String outputLocation)
         {
-            timer = new System.Timers.Timer();
+	        this.outputLocation = outputLocation;
+
+	        timer = new System.Timers.Timer();
             timer.Elapsed += Timer_Elapsed;
             timer.Interval = new TimeSpan(0, 0, 0, 0, 100).TotalMilliseconds;
             timer.AutoReset = true;
 
-            processor = new FileProcessor(@"K:\SD webui\outputs\txt2img-images");
+            processor = new FileProcessor(this.outputLocation);
             InitializeComponent();
 
             SetStartStopButtonText();

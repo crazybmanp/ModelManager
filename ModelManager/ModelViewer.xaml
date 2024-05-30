@@ -73,7 +73,7 @@
 				<Label>
 					Link
 				</Label>
-				<Button Margin="5">
+				<Button Margin="5" Click="UrlButton_Click">
 					<fa:FontAwesome Icon="Globe"></fa:FontAwesome>
 				</Button>
 			</StackPanel>

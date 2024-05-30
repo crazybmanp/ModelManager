@@ -40,8 +40,9 @@ namespace ModelManager
 
 		private List<string> GetAllFiles()
 		{
-			string path = Path.Join(Model.SDPath, Model.LoraPath);
-			return Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
+			DirectoryInfo loraDir = new DirectoryInfo(Path.Join(MainWindow.SDPath, MainWindow.LoraPath));
+			FileInfo[] allFiles = loraDir.GetFiles("*", SearchOption.AllDirectories);
+			return MainWindow.FilterIgnored(allFiles).Select(e => e.FullName).ToList();
 		}
 
 		private List<string> GetAttachedFiles()
@@ -94,7 +95,7 @@ namespace ModelManager
 
 				foreach (Orphan orphan in selectedOrphans)
 				{
-					string relativePath = Path.GetRelativePath(Path.Join(Model.SDPath), orphan.Path);
+					string relativePath = Path.GetRelativePath(Path.Join(MainWindow.SDPath), orphan.Path);
 					string newFilePath = Path.Join(newPath, relativePath);
 					Directory.CreateDirectory(Path.GetDirectoryName(newFilePath) ?? throw new InvalidOperationException());
 					File.Move(orphan.Path, newFilePath);
@@ -146,6 +147,6 @@ namespace ModelManager
 		public required string Path { get; init; }
 		public bool Selected { get; set; } = false;
 
-		public string DisplayPath => System.IO.Path.GetRelativePath(Model.SDPath, Path);
+		public string DisplayPath => System.IO.Path.GetRelativePath(MainWindow.SDPath, Path);
 	}
 }

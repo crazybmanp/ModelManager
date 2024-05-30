@@ -23,6 +23,13 @@
 		</Grid.RowDefinitions>
 
 		<fluent:Ribbon Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+			<fluent:Ribbon.Menu>
+				<fluent:Backstage CloseOnEsc="True">
+					<fluent:BackstageTabControl>
+						<fluent:Button Click="SettingsButton_click">Settings</fluent:Button>
+					</fluent:BackstageTabControl>
+				</fluent:Backstage>
+			</fluent:Ribbon.Menu>
 			<fluent:RibbonTabItem Header="General">
 				<fluent:RibbonGroupBox Header="Filtering">
 					<Grid>
@@ -66,7 +73,7 @@
 							<CheckBox IsChecked="{Binding ElementName=This, Path=FilterLink}" IsThreeState="True" VerticalAlignment="Center" Margin="5"/>
 						</WrapPanel>
 
-						<WrapPanel Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right">
+						<WrapPanel Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right" Visibility="Collapsed"> <!-- TODO: Implement this -->
 							<Label>Json:</Label>
 							<Button VerticalAlignment="Center" Margin ="1" Click="JsonBtn_Click">
 								<fa:FontAwesome Icon="Gear" Margin="5"/>

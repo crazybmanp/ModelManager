@@ -13,6 +13,11 @@ namespace ModelManager
 	/// </summary>
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
+		public static Configuration Config;
+
+		public static string SDPath => Config.SDModelFolder;
+		public static string LoraPath = @"Lora\";
+
 		private List<Model> models;
 		private List<Model> displayModels;
 
@@ -114,8 +119,25 @@ namespace ModelManager
 
 		public List<Model> GetModels => models;
 
+		static MainWindow()
+		{
+			Config = new Configuration();
+		}
+
 		public MainWindow()
 		{
+
+			if (string.IsNullOrEmpty(Config.SDModelFolder) || !Directory.Exists(SDPath))
+			{
+				MessageBox.Show("You will need to configure the settings first.");
+				new SettingsWindow(Config).ShowDialog();
+			}
+
+			if (!Directory.Exists(SDPath))
+			{
+				throw new Exception("Invalid SD path after getting settings");
+			}
+
 			models = LoadAllLoras();
 			displayModels = models;
 			categories = GetCategories();
@@ -123,10 +145,11 @@ namespace ModelManager
 			InitializeComponent();
 		}
 
-		public static List<Model> LoadAllLoras()
+		private static List<Model> LoadAllLoras()
 		{
-			DirectoryInfo loraDir = new DirectoryInfo(Path.Join(Model.SDPath, Model.LoraPath));
+			DirectoryInfo loraDir = new DirectoryInfo(Path.Join(SDPath, LoraPath));
 			FileInfo[] files = loraDir.GetFiles("*", SearchOption.AllDirectories);
+			files = FilterIgnored(files);
 			List<FileInfo> modelFiles = files.Where(e => Model.ValidModelFiletypes.Contains(Path.GetExtension(e.Name))).ToList();
 
 			List<Model> model = new List<Model>();
@@ -136,6 +159,17 @@ namespace ModelManager
 			}
 
 			return model;
+		}
+		public static FileInfo[] FilterIgnored(FileInfo[] fileList)
+		{
+			FileInfo[] files = fileList.ToArray();
+			foreach (string ignoredFolder in Config.IgnoredModelFolders)
+			{
+				string fullFolder = Path.Join(Config.SDModelFolder, ignoredFolder);
+				files = files.Where(e => !e.FullName.StartsWith(fullFolder)).ToArray();
+			}
+
+			return files;
 		}
 
 		private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
@@ -155,7 +189,7 @@ namespace ModelManager
 			[
 				"No Category"
 			];
-			categories.AddRange(models.Select(e => e.Category).Distinct());
+			categories.AddRange(models.Select(e => e.Category).Distinct().OrderBy(e => e));
 			return categories;
 		}
 
@@ -224,7 +258,11 @@ namespace ModelManager
 
 		private void FileProcessorButton_Click(object sender, RoutedEventArgs e)
 		{
-			FileProcessorWindow win = new FileProcessorWindow();
+			if (!Directory.Exists(Config.OutputFolder))
+			{
+				throw new Exception("Invalid Output Folder path");
+			}
+			FileProcessorWindow win = new FileProcessorWindow(Config.OutputFolder);
 			win.Show();
 		}
 
@@ -279,6 +317,13 @@ namespace ModelManager
 			}
 
 			model.Delete();
+
+			Refresh();
+		}
+
+		private void SettingsButton_click(object sender, RoutedEventArgs e)
+		{
+			new SettingsWindow(Config).ShowDialog();
 
 			Refresh();
 		}

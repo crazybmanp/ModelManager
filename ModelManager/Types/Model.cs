@@ -1,18 +1,18 @@
 ﻿using System;
 using System.IO;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualBasic.FileIO;
+using static System.Net.WebRequestMethods;
+using File = System.IO.File;
 
 namespace ModelManager;
 
 
 public class Model
 {
-	public static string SDPath = @"K:\SD webui\models\";
-	public static string LoraPath = @"Lora\";
-
 	public ModelType Type;
 	public string Name { get; set; }
 
@@ -28,7 +28,7 @@ public class Model
 	public bool isPreviewComplete => PreviewFile is not null;
 	public bool isLinkComplete => LinkFile is not null;
 
-	public string GetmodelFileBase => Path.Join(SDPath, LoraPath, Category, Name);
+	public string GetmodelFileBase => Path.Join(MainWindow.SDPath, MainWindow.LoraPath, Category, Name);
 
 	public BitmapImage ImageSource
 	{
@@ -140,7 +140,7 @@ public class Model
 		LinkFile = File.Exists(lfn) ? new FileInfo(lfn) : null;
 
 		//The Category should be the relative path from SDPath + LoraPath to the directory that contains the model file
-		Category = Path.GetRelativePath(Path.Join(SDPath, LoraPath), path);
+		Category = Path.GetRelativePath(Path.Join(MainWindow.SDPath, MainWindow.LoraPath), path);
 	}
 
 	public static readonly string[] ValidModelFiletypes = [".safetensors", ".pkl", ".pickle", ".pt"];
@@ -184,7 +184,7 @@ public class Model
 
 	public void RemoveEmptyDirectory(string category)
 	{
-		DirectoryInfo directory = new DirectoryInfo(Path.Join(SDPath, LoraPath, category));
+		DirectoryInfo directory = new DirectoryInfo(Path.Join(MainWindow.SDPath, MainWindow.LoraPath, category));
 		if (directory.GetFiles().Length == 0 && directory.GetDirectories().Length == 0)
 		{
 			directory.Delete();
@@ -193,7 +193,7 @@ public class Model
 
 	public void Move(string category, string? newName=null)
 	{
-		string newDirectory = Path.Join(SDPath, LoraPath, category);
+		string newDirectory = Path.Join(MainWindow.SDPath, MainWindow.LoraPath, category);
 		Directory.CreateDirectory(newDirectory);
 		string newPath = Path.Join(newDirectory, newName ?? Name);
 
@@ -268,7 +268,9 @@ public class Model
 
 	internal void SetUrl(string modifiedLink)
 	{
-		throw new NotImplementedException();
+		string path = Path.Join(MainWindow.SDPath, MainWindow.LoraPath, Category, $"{Name}.url");
+
+		File.WriteAllText(path, $"[InternetShortcut]\nURL={modifiedLink}");
 	}
 }
 

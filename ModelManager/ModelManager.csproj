@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Config.Net" Version="5.2.0" />
     <PackageReference Include="Fluent.Ribbon" Version="10.1.0" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
   </ItemGroup>
