@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.VisualBasic.FileIO;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -41,7 +42,7 @@ namespace ModelManager
 		private List<string> GetAllFiles()
 		{
 			DirectoryInfo loraDir = new DirectoryInfo(Path.Join(MainWindow.SDPath, MainWindow.LoraPath));
-			FileInfo[] allFiles = loraDir.GetFiles("*", SearchOption.AllDirectories);
+			FileInfo[] allFiles = loraDir.GetFiles("*", System.IO.SearchOption.AllDirectories);
 			return MainWindow.FilterIgnored(allFiles).Select(e => e.FullName).ToList();
 		}
 
@@ -70,7 +71,7 @@ namespace ModelManager
 
 				foreach (Orphan orphan in selectedOrphans)
 				{
-					File.Delete(orphan.Path);
+					FileSystem.DeleteFile(orphan.Path, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
 				}
 
 				Refresh();

@@ -113,7 +113,6 @@ namespace ModelManager
 			{
 				displayModels = value;
 				OnPropertyChanged();
-				OnPropertyChanged();
 			}
 		}
 
