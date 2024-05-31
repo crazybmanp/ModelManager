@@ -567,8 +567,9 @@ class FileProcessor
             "ADetailer denoising strength 2nd",
             "ADetailer inpaint only masked 2nd",
             "ADetailer inpaint padding 2nd",
-            "ControlNet"
-            };
+            "ControlNet",
+            "Downcast alphas_cumprod"
+			};
 
     private static string ProcessTag(string tag, StreamReader sr, out bool reject)
     {
