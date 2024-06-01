@@ -217,7 +217,7 @@ class FileProcessor
                 {
                     IEnumerable<Directory> directories = ImageMetadataReader.ReadMetadata(file.Path);
 
-                    Directory pngText = directories.First(d => d.Name == "PNG-tEXt");
+                    Directory pngText = directories.First(d => d.Name == "PNG-tEXt" || d.Name == "PNG-iTXt");
                     Tag tag = pngText.Tags.First(t => t.Name == "Textual Data");
 
                     tagText = tag.Description ?? throw new Exception("No metadata in tag");
