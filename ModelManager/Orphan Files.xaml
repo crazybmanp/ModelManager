@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ModelManager"
         mc:Ignorable="d"
         Title="Orphan Killer 5000" Height="300" Width="400"
-        x:Name="This">
+        x:Name="This" Icon="/Resources/MMLogoWaifu.png">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30"/>

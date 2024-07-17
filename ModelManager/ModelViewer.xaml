@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:ModelManager"
         mc:Ignorable="d"
         Title="Model Viewer" Height="700" Width="500"
-		DataContext="{Binding RelativeSource={RelativeSource Self}}"
+		DataContext="{Binding RelativeSource={RelativeSource Self}}" Icon="/Resources/MMLogoWaifu.png"
         >
 	<Grid>
 		<Grid.ColumnDefinitions>
